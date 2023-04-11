@@ -3,7 +3,8 @@ import Home from '@/views/home/Home.vue'
 import MySupports from '@/views/supports/MySupports.vue'
 import Lesson from '@/views/modules/Lesson.vue'
 import Login from '@/views/auth/Login.vue'
-import ForgetPassword from '@/views/auth/ForgetPassword.vue'
+import ForgotPassword from '@/views/auth/ForgotPassword.vue'
+import ResetPassword from '@/views/auth/ResetPassword.vue'
 
 const routes = [
   {
@@ -13,8 +14,14 @@ const routes = [
   },
   {
     path: '/recuperar-senha',
-    name: 'forget.password',
-    component: ForgetPassword
+    name: 'forgot.password',
+    component: ForgotPassword
+  },
+  {
+    path: '/reset-password/:token',
+    name: 'reset.password',
+    component: ResetPassword,
+    props: true
   },
   {
     path: '/campus',

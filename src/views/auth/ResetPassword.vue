@@ -7,7 +7,10 @@
   >
     <div class="loginContent">
       <div class="loginCard">
-        <div class="decor" style="background-image: url('./assets/images/building.jpg')">
+        <div
+          class="decor"
+          style="background-image: url('./assets/images/building.jpg')"
+        >
           <div class="content">
             <span class="logo">
               <img :src="require('@/assets/images/logo.svg')" alt="Ignitor" />
@@ -48,7 +51,13 @@
             <form action="/dist/index.html" method="">
               <div class="groupForm">
                 <i class="far fa-envelope"></i>
-                <input type="email" name="email" placeholder="Email" v-model="email" required />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  v-model="email"
+                  required
+                />
               </div>
               <div class="groupForm">
                 <i class="far fa-key"></i>
@@ -61,24 +70,25 @@
                 />
                 <i class="far fa-eye buttom"></i>
               </div>
-              <button 
-                :class="[
-                  'btn',
-                  'primary',
-                  loading ? 'loading' : ''
-                ]"
+              <div class="groupForm">
+                <i class="far fa-envelope"></i>
+                <input
+                  type="password"
+                  name="password_confirmation"
+                  placeholder="Confirme a Senha"
+                  v-model="password_confirmation"
+                  required
+                />
+              </div>
+              <button
+                :class="['btn', 'primary', loading ? 'loading' : '']"
                 type="submit"
-                @click.prevent="login">
+                @click.prevent="login"
+              >
                 <span v-if="loading">Carregando...</span>
-                <span v-else>Login</span>
+                <span v-else>Alterar Senha</span>
               </button>
             </form>
-            <span>
-              <p class="fontSmall">
-                Esqueceu sua senha?
-                <router-link :to="{name: 'forgot.password'}" class="link primary">Clique aqui</router-link>
-              </p>
-            </span>
           </div>
           <span class="copyright fontSmall">
             Todos os Direitos reservados - <b>Especializati</b>
@@ -90,36 +100,45 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import { useStore } from "vuex"
-import router from '@/router';
+import { ref } from "vue";
+import router from "@/router";
+import ResetPasswordService from "@/services/password.reset.service";
 
 export default {
-  name: "Login",
-  setup() {
-    const store = useStore()
-    const email = ref("")
-    const password = ref("")
-    const loading = ref(false)
+  name: "ResetPassword",
+  props: {
+    token: {
+      type: String,
+      required: true,
+    },
+  },
+  setup(props) {
+    const email = ref("");
+    const password = ref("");
+    const password_confirmation = ref("");
+    const loading = ref(false);
 
     const login = () => {
-      loading.value = true
-      store.dispatch('login', {
+      loading.value = true;
+
+      ResetPasswordService.resetPassword({
         email: email.value,
         password: password.value,
-        device_name: 'web'
+        password_confirmation: password_confirmation.value,
+        token: props.token,
       })
-      .then(() => router.push({name: 'campus.home'}))
-      .catch(() => alert('erro ao fazer login'))
-      .finally(() => loading.value = false)
-    }
+        .then(() => router.push({ name: "login" }))
+        .catch(() => alert("erro ao resetar senha"))
+        .finally(() => (loading.value = false));
+    };
 
     return {
       email,
       password,
+      password_confirmation,
       loading,
-      login
-    }
+      login,
+    };
   },
 };
 </script>

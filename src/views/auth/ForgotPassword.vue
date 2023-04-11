@@ -51,9 +51,22 @@
             <form action="/dist/index.html" method="">
               <div class="groupForm">
                 <i class="far fa-envelope"></i>
-                <input type="email" name="email" placeholder="Email" required />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  required
+                  v-model="email"
+                />
               </div>
-              <button class="btn primary" type="submit">Recuperar Senha</button>
+              <button
+                :class="['btn', 'primary', loading ? 'loading' : '']"
+                type="submit"
+                @click.prevent="forgotPassword"
+              >
+                <span v-if="loading">Carregando...</span>
+                <span v-else>Recuperar Senha</span>
+              </button>
             </form>
             <span>
               <p class="fontSmall">
@@ -73,7 +86,31 @@
 </template>
 
 <script>
+import { ref } from "vue";
+import { useStore } from "vuex";
+
 export default {
-  name: "Login",
+  name: "ForgotPassword",
+  setup() {
+    const store = useStore();
+    const email = ref("");
+    const loading = ref(false);
+
+    const forgotPassword = () => {
+      loading.value = true;
+
+      store
+        .dispatch("forgotPassword", { email: email.value })
+        .then(() => alert("Email enviado com sucesso!"))
+        .catch(() => alert("Erro ao enviar email!"))
+        .finally(() => loading.value = false);
+    };
+
+    return {
+      email,
+      loading,
+      forgotPassword,
+    };
+  },
 };
 </script>
