@@ -88,6 +88,7 @@
 <script>
 import { ref } from "vue";
 import { useStore } from "vuex";
+import { notify } from "@kyvg/vue3-notification";
 
 export default {
   name: "ForgotPassword",
@@ -101,9 +102,23 @@ export default {
 
       store
         .dispatch("forgotPassword", { email: email.value })
-        .then(() => alert("Email enviado com sucesso!"))
-        .catch(() => alert("Erro ao enviar email!"))
-        .finally(() => loading.value = false);
+        .then(() => {
+          notify({
+            title: "Sucesso",
+            text: "Enviamos um email para a recuperação de senha. Verifique sua caixa de entrada",
+            type: "success",
+            duration: 10000,
+          });
+        })
+        .catch(() => {
+          notify({
+            title: "Erro",
+            text: "Falha ao enviar email de recuperação de senha! Aguarde alguns minutos e tente novamente.",
+            type: "error",
+            duration: 10000,
+          });
+        })
+        .finally(() => (loading.value = false));
     };
 
     return {

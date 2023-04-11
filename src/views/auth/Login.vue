@@ -7,7 +7,10 @@
   >
     <div class="loginContent">
       <div class="loginCard">
-        <div class="decor" style="background-image: url('./assets/images/building.jpg')">
+        <div
+          class="decor"
+          style="background-image: url('./assets/images/building.jpg')"
+        >
           <div class="content">
             <span class="logo">
               <img :src="require('@/assets/images/logo.svg')" alt="Ignitor" />
@@ -48,7 +51,13 @@
             <form action="/dist/index.html" method="">
               <div class="groupForm">
                 <i class="far fa-envelope"></i>
-                <input type="email" name="email" placeholder="Email" v-model="email" required />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  v-model="email"
+                  required
+                />
               </div>
               <div class="groupForm">
                 <i class="far fa-key"></i>
@@ -61,14 +70,11 @@
                 />
                 <i class="far fa-eye buttom"></i>
               </div>
-              <button 
-                :class="[
-                  'btn',
-                  'primary',
-                  loading ? 'loading' : ''
-                ]"
+              <button
+                :class="['btn', 'primary', loading ? 'loading' : '']"
                 type="submit"
-                @click.prevent="login">
+                @click.prevent="login"
+              >
                 <span v-if="loading">Carregando...</span>
                 <span v-else>Login</span>
               </button>
@@ -76,7 +82,11 @@
             <span>
               <p class="fontSmall">
                 Esqueceu sua senha?
-                <router-link :to="{name: 'forgot.password'}" class="link primary">Clique aqui</router-link>
+                <router-link
+                  :to="{ name: 'forgot.password' }"
+                  class="link primary"
+                  >Clique aqui</router-link
+                >
               </p>
             </span>
           </div>
@@ -90,36 +100,47 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import { useStore } from "vuex"
-import router from '@/router';
+import { ref } from "vue";
+import { useStore } from "vuex";
+import router from "@/router";
+import { notify } from "@kyvg/vue3-notification";
 
 export default {
   name: "Login",
   setup() {
-    const store = useStore()
-    const email = ref("")
-    const password = ref("")
-    const loading = ref(false)
+    const store = useStore();
+    const email = ref("");
+    const password = ref("");
+    const loading = ref(false);
 
     const login = () => {
-      loading.value = true
-      store.dispatch('login', {
-        email: email.value,
-        password: password.value,
-        device_name: 'web'
-      })
-      .then(() => router.push({name: 'campus.home'}))
-      .catch(() => alert('erro ao fazer login'))
-      .finally(() => loading.value = false)
-    }
+      loading.value = true;
+      store
+        .dispatch("login", {
+          email: email.value,
+          password: password.value,
+          device_name: "web",
+        })
+        .then(() => router.push({ name: "campus.home" }))
+        .catch(error => {
+          let msgError = "Erro ao logar";
+          if (error.status === 422) msgError = 'Usuário ou senha inválidos'
+          notify({
+            title: "Erro ao logar",
+            text: msgError,
+            type: "error",
+            duration: 10000,
+          });
+        })
+        .finally(() => (loading.value = false));
+    };
 
     return {
       email,
       password,
       loading,
-      login
-    }
+      login,
+    };
   },
 };
 </script>

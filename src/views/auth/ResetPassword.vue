@@ -103,6 +103,7 @@
 import { ref } from "vue";
 import router from "@/router";
 import ResetPasswordService from "@/services/password.reset.service";
+import { notify } from "@kyvg/vue3-notification";
 
 export default {
   name: "ResetPassword",
@@ -127,8 +128,23 @@ export default {
         password_confirmation: password_confirmation.value,
         token: props.token,
       })
-        .then(() => router.push({ name: "login" }))
-        .catch(() => alert("erro ao resetar senha"))
+        .then(() => {
+          notify({
+            title: "Sucesso",
+            text: "Senha alterada com sucesso.",
+            type: "success",
+            duration: 10000,
+          });
+          router.push({ name: "login" });
+        })
+        .catch(() => {
+          notify({
+            title: "Erro",
+            text: "Falha ao alterar a senha",
+            type: "error",
+            duration: 10000,
+          });
+        })
         .finally(() => (loading.value = false));
     };
 
