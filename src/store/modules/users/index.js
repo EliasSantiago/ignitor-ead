@@ -27,12 +27,29 @@ export default
     },
 
     actions: {
-      login(_, params) {
+      login({ dispatch }, params) {
         return AuthService.login(params)
+          .then(() => dispatch('getMe'))
+      },
+
+      logout({ commit }) {
+        commit('CHANGE_LOADING', true)
+        return AuthService.logout()
+          .then(() => commit('LOGOUT'))
+          .finally(() => commit('CHANGE_LOADING', false))
       },
 
       forgotPassword(_, params) {
         return ResetPasswordService.forgotPassword(params)
+      },
+
+      getMe({ commit }) {
+        commit('CHANGE_LOADING', true, 'Carregando dados do usuário...')
+        AuthService.getMe()
+          .then(user => {
+            commit('SET_USER', user)
+          })
+          .finally(() => commit('CHANGE_LOADING', false))
       },
     },
   }

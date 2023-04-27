@@ -5,46 +5,26 @@
         <span class="text">Modulos</span>
         <span class="icon far fa-stream"></span>
       </div>
-      <div class="modules">
+      <div
+        :class="['modules', module.id == showModule ? 'active' : '']"
+        @click.prevent="toggleModule(module.id)"
+        class="modules"
+        v-for="module in modules"
+        :key="module.id"
+      >
         <div class="name">
-          <span class="text">Modulo 1</span>
+          <span class="text">{{ module.name }}</span>
           <span class="icon fas fa-sort-down"></span>
         </div>
-        <ul class="classes">
-          <li class="active">
-            <span class="check active fas fa-check"></span>
-            <span class="nameLesson">Aula 01</span>
-          </li>
-          <li>
-            <span class="check active fas fa-check"></span>
-            <span class="nameLesson">Aula 02</span>
-            <span class="file fas fa-file-archive"></span>
-          </li>
-          <li>
-            <span class="check fas fa-check"></span>
-            <span class="nameLesson">Aula 03</span>
-            <span class="file fas fa-file-archive"></span>
-          </li>
-        </ul>
-      </div>
-      <div class="modules">
-        <div class="name">
-          <span class="text">Modulo 2</span>
-          <span class="icon fas fa-sort-down"></span>
-        </div>
-        <ul class="classes">
-          <li>
-            <span class="check fas fa-check"></span>
-            <span class="nameLesson">Aula 01</span>
-          </li>
-          <li>
-            <span class="check active fas fa-check"></span>
-            <span class="nameLesson">Aula 02</span>
-            <span class="file fas fa-file-archive"></span>
-          </li>
-          <li>
-            <span class="check fas fa-check"></span>
-            <span class="nameLesson">Aula 03</span>
+        <ul class="classes" v-show="module.id == showModule">
+          <li
+            @click.prevent="addLessonInPlayer(lesson)"
+            v-for="lesson in module.lessons"
+            :key="lesson.id"
+            :class="{ 'active': lessonInPlayer.id === lesson.id }"
+          >
+            <span v-if="lesson.views.length > 0" class="check active fas fa-check"></span>
+            <span class="nameLesson">{{ lesson.name }}</span>
           </li>
         </ul>
       </div>
@@ -53,7 +33,26 @@
 </template>
 
 <script>
+import { computed, ref } from "vue";
+import { useStore } from "vuex";
 export default {
-  name: "Modules"
-}
+  name: "Modules",
+  setup() {
+    const store = useStore();
+    const showModule = ref("0");
+    const lessonInPlayer = computed(() => store.state.courses.lessonPlayer);
+    const modules = computed(() => store.state.courses.courseSelected.modules);
+    const toggleModule = (moduleId) => showModule.value = moduleId;
+    const addLessonInPlayer = (lesson) => {
+      store.commit("SET_LESSON_PLAYER", lesson);
+    };
+    return {
+      modules,
+      showModule,
+      toggleModule,
+      addLessonInPlayer,
+      lessonInPlayer,
+    };
+  },
+};
 </script>
